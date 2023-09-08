@@ -38,7 +38,7 @@ class _DetailPage2 extends State<DetailPage2> {
       'control_oil': controlOilController.text,
     };
     final response = await http.post(
-      Uri.parse('http://192.168.1.6:8000/api/input2'),
+      Uri.parse('http://192.168.21.107:8000/api/input2'),
       body: jsonEncode(body),
       headers: {
         'Content-Type': 'application/json',

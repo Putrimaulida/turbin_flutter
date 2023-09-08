@@ -19,14 +19,11 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isLoginInProgress = false;
   bool _isObscured = true;
   bool _passwordVisible = false;
-
-  //email controller
-  final TextEditingController _usernameController =
-      TextEditingController(text: "operator");
-  //password controller
-  final TextEditingController _passwordController =
-      TextEditingController(text: "password");
-
+  String loginErrorMessage = "";
+  
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const SizedBox(
-                  height: 90,
+                  height: 50,
                   width: 25,
                 ),
                 Padding(
@@ -100,6 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: TextFormField(
                       controller: _usernameController,
+                      
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.person),
@@ -145,6 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextFormField(
                       obscureText: !_passwordVisible,
                       controller: _passwordController,
+                      
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.lock),
@@ -167,36 +166,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-      
-                //Forgot password
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: InkWell(
-                    onTap: () {},
-                    child: const Padding(
-                      padding: EdgeInsets.only(
-                        top: 1,
-                      ),
-                      child: Text(
-                        "Forgot password?", 
-                        style: TextStyle(
-                          color: Color(0xFFDA3340),
-                          fontSize: 14,
-                        ), 
-                      ),
-                    ),
-                  ),
-                ),
-                // const SizedBox(
-                //   height: 20,
-                // ),
                 const Padding(
                   padding: EdgeInsets.only(
                     top: 25,
                     bottom: 20,
                   ),
                 ),
-       
+
+                Text(
+                  loginErrorMessage,
+                  style: const TextStyle(color: Colors.red),
+                ),
+
                 Row(
                 children: [
                   Expanded(
@@ -209,12 +190,27 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(
                           () {
                             isLoginInProgress = true;
+                            loginErrorMessage = "";
                           },
                         );
+                        if (_usernameController.text.isEmpty) {
+                          setState(() {
+                            loginErrorMessage = "Username cannot be empty!";
+                            isLoginInProgress = false;
+                          });
+                          return;
+                        } if (_passwordController.text.isEmpty) {
+                          setState(() {
+                            loginErrorMessage = "Password cannot be empty!";
+                            isLoginInProgress = false;
+                          });
+                          return;
+                        }
+
                         //request login
                         Map<String, String> headers = {"Accept": "application/json"};
                         final response = await http.post(
-                          Uri.parse('http://192.168.1.6:8000/api/login'),
+                          Uri.parse('http://192.168.60.107:8000/api/login'),
                           headers: headers,
                           body: {
                             'username': _usernameController.text,
@@ -241,7 +237,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             if (!mounted) {
                               return;
                             }
-
                             if (isLoggedIn) {
                               Navigator.pushReplacement(
                                 context,
@@ -251,15 +246,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             }
                           }
+                        } 
+                        
+                        else if (response.statusCode == 401){
+                          setState(() {
+                            loginErrorMessage = "Invalid username or password!";
+                            isLoginInProgress = false;                          
+                          });
                         } else {
-                          final jsonResponse = json.decode(response.body);
-                          final loginError = LoginError.fromJson(jsonResponse);
-                          setState(
-                            () {
-                              isLoginInProgress = false;
-                              isLoggedIn = false;
-                            },
-                          );
+                          setState(() {
+                            loginErrorMessage = "Username or Password cannot be empty!";
+                            isLoginInProgress = false;
+                          });
                         }
                       },
                       child: const Padding(
@@ -277,15 +275,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ],
               ),
-      
               Visibility(
-                visible: isLoginInProgress,
-                  child: const CircularProgressIndicator(),
-                ),
-              ],
+              visible: isLoginInProgress,
+              child: const CircularProgressIndicator(),
+            ),
+            ],
             ),
           ),
-          
         ),
       ),
     );

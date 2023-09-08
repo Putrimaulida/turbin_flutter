@@ -1,8 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:logsheet_turbin/models/input1.dart';
 import 'package:logsheet_turbin/screens/page/page1.dart';
 import 'package:logsheet_turbin/screens/page/page2.dart';
 import 'package:logsheet_turbin/screens/page/page3.dart';
 import 'package:logsheet_turbin/screens/profile/dashboard.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -28,6 +33,8 @@ class BundelCard1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
+      // bisa dikasi if data= null detail page 1 save
+      // jika data data!=null masuk ke detail page 1 edit
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -92,6 +99,18 @@ class BundelCard1 extends StatelessWidget {
                         width: 110,
                       ),
                     ),
+                    // Positioned(
+                    //   top: 30.0, // Sesuaikan dengan posisi yang sesuai
+                    //   right: 30.0, // Sesuaikan dengan posisi yang sesuai
+                    //   child: Padding(
+                    //     padding: EdgeInsets.all(8.0), // Sesuaikan padding sesuai kebutuhan
+                    //     child: Image(
+                    //       image: AssetImage('assets/images/circlek.png'),
+                    //       height: 29,
+                    //       width: 29,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -166,14 +185,23 @@ class BundelCard2 extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
+                    Positioned(
+                      bottom: 16.0, // Atur posisi dari bawah
+                      right: 16.0, // Atur posisi dari kanan
                       child: Image(
                         image: AssetImage('assets/images/energy-consumption.png'),
                         height: 115,
                         width: 115,
                       ),
                     ),
+                    // Padding(
+                    //   padding: EdgeInsets.all(16.0),
+                    //   child: Image(
+                    //     image: AssetImage('assets/images/energy-consumption.png'),
+                    //     height: 115,
+                    //     width: 115,
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

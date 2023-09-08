@@ -1,7 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:logsheet_turbin/screens/page/card_page.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:logsheet_turbin/models/input1.dart';
+import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,6 +17,9 @@ class DetailPage1 extends StatefulWidget {
 
 class _DetailPage1State extends State<DetailPage1> {
   bool isDataSaved = false;
+  String loginErrorMessage = "";
+  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  var input1List = <Input1>[];
   final TextEditingController inletSteamController = TextEditingController();
   final TextEditingController exmSteamController = TextEditingController();
   final TextEditingController turbinThrustBearingController = TextEditingController();
@@ -24,6 +30,38 @@ class _DetailPage1State extends State<DetailPage1> {
   final TextEditingController wbTbnSideController = TextEditingController();
   final TextEditingController wbGenSideController = TextEditingController();
   final TextEditingController ocLubOilSoutletController = TextEditingController();
+
+  bool _isInputEmpty() {
+    return inletSteamController.text.isEmpty ||
+        exmSteamController.text.isEmpty ||
+        turbinThrustBearingController.text.isEmpty ||
+        tbGovSideController.text.isEmpty ||
+        tbCoupSideController.text.isEmpty ||
+        pbTbnSideController.text.isEmpty ||
+        pbGenSideController.text.isEmpty ||
+        wbTbnSideController.text.isEmpty ||
+        wbGenSideController.text.isEmpty ||
+        ocLubOilSoutletController.text.isEmpty;
+  }
+
+  bool _isInputValid() {
+    try {
+      double.parse(inletSteamController.text);
+      double.parse(exmSteamController.text);
+      double.parse(turbinThrustBearingController.text);
+      double.parse(tbGovSideController.text);
+      double.parse(tbCoupSideController.text);
+      double.parse(pbTbnSideController.text);
+      double.parse(pbGenSideController.text);
+      double.parse(wbTbnSideController.text);
+      double.parse(wbGenSideController.text);
+      double.parse(ocLubOilSoutletController.text);
+    
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 
   void addData() async {
     //request add
@@ -41,8 +79,9 @@ class _DetailPage1State extends State<DetailPage1> {
       'wb_gen_side': wbGenSideController.text,
       'oc_lub_oil_outlet': ocLubOilSoutletController.text,
     };
+    // memakai put
     final response = await http.post(
-      Uri.parse('http://192.168.1.6:8000/api/input1'),
+      Uri.parse('http://192.168.60.107:8000/api/input1'),
       body: jsonEncode(body),
       headers: {
         'Content-Type': 'application/json',
@@ -60,13 +99,41 @@ class _DetailPage1State extends State<DetailPage1> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (BuildContext context) => const CardPage(),
+          builder: (BuildContext context) => const HomeScreen(),
         ),
       );
     } else {
       final jsonResponse = json.decode(response.body);
       print(jsonResponse);
     }
+  }
+
+  Future<List<Input1>?> getList() async {
+    final prefs = await _prefs;
+    var token = prefs.getString('token');
+    print(token);
+    var headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+    try {
+      var url = Uri.parse("http://192.168.21.107:8000/api/input1");
+
+      final response = await http.get(url, headers: headers);
+
+      print(response.statusCode);
+      print(input1List.length);
+      print(jsonDecode(response.body));
+
+      if (response.statusCode == 200) {
+        var jsonString = response.body;
+        return input1FromJson(jsonString);
+      }
+    } catch (error) {
+      print('Testing');
+    }
+    return null;
   }
 
   @override
@@ -96,6 +163,18 @@ class _DetailPage1State extends State<DetailPage1> {
                 width: 25,
               ),
 
+               Text(
+                DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(
+                height: 25,
+                width: 25,
+              ),
               // Inleat Steam
               const Align(
                 alignment: Alignment.centerLeft,
@@ -127,6 +206,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: inletSteamController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$'))
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -170,6 +252,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: exmSteamController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -213,6 +298,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: turbinThrustBearingController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -256,6 +344,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: tbGovSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -299,6 +390,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: tbCoupSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -342,6 +436,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: pbTbnSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -385,6 +482,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: pbGenSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -428,6 +528,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: wbTbnSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -471,6 +574,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: wbGenSideController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -514,6 +620,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   ),
                   child: TextFormField(
                     controller: ocLubOilSoutletController,
+                    inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                    ],
                     decoration: const InputDecoration(
                       border: InputBorder.none,
                       isDense: true,
@@ -525,13 +634,27 @@ class _DetailPage1State extends State<DetailPage1> {
               const SizedBox(
                 height: 20,
               ),
-              
+
+              Text(
+                loginErrorMessage,
+                style: const TextStyle(color: Colors.red),
+              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      addData();
+                      if (_isInputEmpty()) {
+                        setState(() {
+                          loginErrorMessage = "Data cannot be empty!";
+                        });
+                      } else if (!_isInputValid()) {
+                        setState(() {
+                        loginErrorMessage = "Enter data with numbers!";
+                        });
+                      } else {
+                        addData();
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -547,13 +670,14 @@ class _DetailPage1State extends State<DetailPage1> {
                       ),
                     ),
                   ),
+                  
                   const SizedBox(width: 16.0),
                   ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CardPage(),
+                          builder: (context) => HomeScreen(),
                         ),
                       );
                     },

@@ -1,7 +1,7 @@
 import 'package:http/http.dart';
 
 class HttpService {
-  static final String baseUrl = 'http://192.168.5.107:8000/api';
+  static final String baseUrl = 'http://192.168.1.6:8000/api';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 
