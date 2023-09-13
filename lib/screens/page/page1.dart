@@ -20,6 +20,7 @@ class _DetailPage1State extends State<DetailPage1> {
   String loginErrorMessage = "";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   var input1List = <Input1>[];
+
   final TextEditingController inletSteamController = TextEditingController();
   final TextEditingController exmSteamController = TextEditingController();
   final TextEditingController turbinThrustBearingController = TextEditingController();
@@ -63,6 +64,34 @@ class _DetailPage1State extends State<DetailPage1> {
     }
   }
 
+  Future<Input1?> getList() async {
+    final prefs = await _prefs;
+    var token = prefs.getString('token');
+    print(token);
+    var headers = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token'
+    };
+    try {
+      var url = Uri.parse("http://192.168.1.2:8000/api/categories");
+
+      final response = await http.get(url, headers: headers);
+
+      print(response.statusCode);
+      print(input1List.length);
+      print(jsonDecode(response.body));
+
+      if (response.statusCode == 200) {
+        var jsonString = response.body;
+        return input1FromJson(jsonString);
+      }
+    } catch (error) {
+      print('Testing');
+    }
+    return null;
+  }
+
   void addData() async {
     //request add
     final pref = await SharedPreferences.getInstance();
@@ -81,7 +110,7 @@ class _DetailPage1State extends State<DetailPage1> {
     };
     // memakai put
     final response = await http.post(
-      Uri.parse('http://192.168.60.107:8000/api/input1'),
+      Uri.parse('http://192.168.1.2:8000/api/input1'),
       body: jsonEncode(body),
       headers: {
         'Content-Type': 'application/json',
@@ -106,34 +135,6 @@ class _DetailPage1State extends State<DetailPage1> {
       final jsonResponse = json.decode(response.body);
       print(jsonResponse);
     }
-  }
-
-  Future<List<Input1>?> getList() async {
-    final prefs = await _prefs;
-    var token = prefs.getString('token');
-    print(token);
-    var headers = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token'
-    };
-    try {
-      var url = Uri.parse("http://192.168.21.107:8000/api/input1");
-
-      final response = await http.get(url, headers: headers);
-
-      print(response.statusCode);
-      print(input1List.length);
-      print(jsonDecode(response.body));
-
-      if (response.statusCode == 200) {
-        var jsonString = response.body;
-        return input1FromJson(jsonString);
-      }
-    } catch (error) {
-      print('Testing');
-    }
-    return null;
   }
 
   @override
@@ -165,7 +166,7 @@ class _DetailPage1State extends State<DetailPage1> {
 
                Text(
                 DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,

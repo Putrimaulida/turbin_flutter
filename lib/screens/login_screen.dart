@@ -1,33 +1,29 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:logsheet_turbin/models/loginError.dart';
-import 'package:logsheet_turbin/models/token.dart';
-import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:http/http.dart' as http;
+import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
   bool isLoggedIn = false;
   bool isLoginInProgress = false;
-  bool _isObscured = true;
   bool _passwordVisible = false;
   String loginErrorMessage = "";
-  
+
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,     
+      resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: SafeArea(
@@ -45,10 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Image.asset(
-                    "assets/images/logo.png", 
-                    height: 150, 
-                    width: 100, 
-                    //fit: BoxFit.cover,
+                    "assets/images/logo.png",
+                    height: 150,
+                    width: 100,
                   ),
                 ),
                 const Padding(
@@ -65,19 +60,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-      
-                // Email
+
+                // Username
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
-                      "Username", 
+                      "Username",
                       style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      ), 
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -86,8 +81,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
-                      width: 1.0, // Ketebalan garis tepi
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
                     ),
                   ),
                   child: Padding(
@@ -97,12 +92,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     child: TextFormField(
                       controller: _usernameController,
-                      
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.person),
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 15),                       
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -110,29 +104,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Password
                 const Align(
                   alignment: Alignment.centerLeft,
                   child: Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
-                      "Password", 
+                      "Password",
                       style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      ), 
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
-                Container(     
+                Container(
                   decoration: BoxDecoration(
                     color: Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
-                      width: 1.0, // Ketebalan garis tepi
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
                     ),
                   ),
                   child: Padding(
@@ -143,13 +137,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: TextFormField(
                       obscureText: !_passwordVisible,
                       controller: _passwordController,
-                      
                       decoration: InputDecoration(
                         border: InputBorder.none,
                         prefixIcon: Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _passwordVisible ? Icons.visibility : Icons.visibility_off,
+                            _passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -166,120 +161,108 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 20,
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(
-                    top: 25,
-                    bottom: 20,
-                  ),
-                ),
-
                 Text(
                   loginErrorMessage,
                   style: const TextStyle(color: Colors.red),
                 ),
 
                 Row(
-                children: [
-                  Expanded(
-                    child: MaterialButton(
-                      color: Colors.blue,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      onPressed: () async {
-                        setState(
-                          () {
+                  children: [
+                    Expanded(
+                      child: MaterialButton(
+                        color: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        onPressed: () async {
+                          setState(() {
                             isLoginInProgress = true;
                             loginErrorMessage = "";
-                          },
-                        );
-                        if (_usernameController.text.isEmpty) {
-                          setState(() {
-                            loginErrorMessage = "Username cannot be empty!";
-                            isLoginInProgress = false;
                           });
-                          return;
-                        } if (_passwordController.text.isEmpty) {
-                          setState(() {
-                            loginErrorMessage = "Password cannot be empty!";
-                            isLoginInProgress = false;
-                          });
-                          return;
-                        }
 
-                        //request login
-                        Map<String, String> headers = {"Accept": "application/json"};
-                        final response = await http.post(
-                          Uri.parse('http://192.168.60.107:8000/api/login'),
-                          headers: headers,
-                          body: {
-                            'username': _usernameController.text,
-                            'password': _passwordController.text,
-                          },
-                        );
-                        if (response.statusCode == 200) {
-                          final jsonResponse = json.decode(response.body);
-                          final token = Token.fromJson(jsonResponse);
-                          final prefs = await SharedPreferences.getInstance();
-                          print("Token From Api ${token.token}");
-                          if (token.token != null) {
-                            await prefs.setString(
-                              'token',
-                              jsonDecode(response.body)['token'],
-                            );
-                            setState(
-                              () {
+                          if (_usernameController.text.isEmpty) {
+                            setState(() {
+                              loginErrorMessage = "Username cannot be empty!";
+                              isLoginInProgress = false;
+                            });
+                            return;
+                          }
+                          if (_passwordController.text.isEmpty) {
+                            setState(() {
+                              loginErrorMessage = "Password cannot be empty!";
+                              isLoginInProgress = false;
+                            });
+                            return;
+                          }
+
+                          // Request login
+                          Map<String, String> headers = {"Accept": "application/json"};
+                          final response = await http.post(
+                            Uri.parse('http://192.168.1.2:8000/api/login'),
+                            headers: headers,
+                            body: {
+                              'username': _usernameController.text,
+                              'password': _passwordController.text,
+                            },
+                          );
+
+                          if (response.statusCode == 200) {
+                            final jsonResponse = json.decode(response.body);
+                            final prefs = await SharedPreferences.getInstance();
+                            print("Token From Api ${jsonResponse['token']}");
+                            if (jsonResponse['token'] != null) {
+                              await prefs.setString('token', jsonResponse['token']);
+                              setState(() {
                                 isLoginInProgress = false;
                                 isLoggedIn = true;
-                              },
-                            );
+                              });
 
-                            if (!mounted) {
-                              return;
+                              if (!mounted) {
+                                return;
+                              }
+                              if (isLoggedIn) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) =>
+                                        const HomeScreen(),
+                                  ),
+                                );
+                              }
                             }
-                            if (isLoggedIn) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (BuildContext context) => const HomeScreen(),
-                                ),
-                              );
-                            }
+                          } else if (response.statusCode == 401) {
+                            setState(() {
+                              loginErrorMessage = "Invalid username or password!";
+                              isLoginInProgress = false;
+                            });
+                          } else {
+                            setState(() {
+                              loginErrorMessage =
+                                  "Username or Password cannot be empty!";
+                              isLoginInProgress = false;
+                            });
                           }
-                        } 
-                        
-                        else if (response.statusCode == 401){
-                          setState(() {
-                            loginErrorMessage = "Invalid username or password!";
-                            isLoginInProgress = false;                          
-                          });
-                        } else {
-                          setState(() {
-                            loginErrorMessage = "Username or Password cannot be empty!";
-                            isLoginInProgress = false;
-                          });
-                        }
-                      },
-                      child: const Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: Text(
-                          "Login", 
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.all(15.0),
+                          child: Text(
+                            "Login",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              Visibility(
-              visible: isLoginInProgress,
-              child: const CircularProgressIndicator(),
-            ),
-            ],
+                  ],
+                ),
+                Visibility(
+                  visible: isLoginInProgress,
+                  child: const CircularProgressIndicator(),
+                ),
+              ],
             ),
           ),
         ),

@@ -1,81 +1,141 @@
 // To parse this JSON data, do
 //
-//     final category = categoryFromJson(jsondouble);
+//     final input1 = input1FromJson(jsonString);
 
 import 'dart:convert';
 
-List<Input1> input1FromJson(String str) => List<Input1>.from(
-      json.decode(str).map(
-            (x) => Input1.fromJson(x),
-          ),
-    );
+Input1 input1FromJson(String str) => Input1.fromJson(json.decode(str));
 
-String input1ToJson(List<Input1> data) => json.encode(
-      List<dynamic>.from(
-        data.map(
-          (x) => x.toJson(),
-        ),
-      ),
-    );
+String input1ToJson(Input1 data) => json.encode(data.toJson());
 
 class Input1 {
-  int id;
-  int user_id;
-  double inlet_steam;	
-  double exm_steam;
-  double turbin_thrust_bearing;	
-  double tb_gov_side;	
-  double tb_coup_side;	
-  double pb_tbn_side;	
-  double pb_gen_side;	
-  double wb_tbn_side;	
-  double wb_gen_side;	
-  double oc_lub_oil_outlet;
+    Data data;
+    dynamic message;
 
-  Input1({
-    required this.id,
-    required this.user_id,
-    required this.inlet_steam,	
-    required this.exm_steam,
-    required this.turbin_thrust_bearing,	
-    required this.tb_gov_side,	
-    required this.tb_coup_side,	
-    required this.pb_tbn_side,	
-    required this.pb_gen_side,	
-    required this.wb_tbn_side,	
-    required this.wb_gen_side,	
-    required this.oc_lub_oil_outlet,
-  });
+    Input1({
+        required this.data,
+        required this.message,
+    });
 
+    factory Input1.fromJson(Map<String, dynamic> json) => Input1(
+        data: Data.fromJson(json["data"]),
+        message: json["message"],
+    );
 
+    Map<String, dynamic> toJson() => {
+        "data": data.toJson(),
+        "message": message,
+    };
+}
 
-  factory Input1.fromJson(Map<String, dynamic> json) => Input1(
+class Data {
+    int id;
+    double inletSteam;
+    double exmSteam;
+    double turbinThrustBearing;
+    double tbGovSide;
+    double tbCoupSide;
+    double pbTbnSide;
+    double pbGenSide;
+    double wbTbnSide;
+    int wbGenSide;
+    int ocLubOilOutlet;
+    DateTime createdAt;
+    DateTime updatedAt;
+    User user;
+
+    Data({
+        required this.id,
+        required this.inletSteam,
+        required this.exmSteam,
+        required this.turbinThrustBearing,
+        required this.tbGovSide,
+        required this.tbCoupSide,
+        required this.pbTbnSide,
+        required this.pbGenSide,
+        required this.wbTbnSide,
+        required this.wbGenSide,
+        required this.ocLubOilOutlet,
+        required this.createdAt,
+        required this.updatedAt,
+        required this.user,
+    });
+
+    factory Data.fromJson(Map<String, dynamic> json) => Data(
         id: json["id"],
-        user_id: json["user_id"],
-        inlet_steam: json["inlet_steam"], 
-        exm_steam: json["exm_steam"],
-        turbin_thrust_bearing: json["turbin_thrust_bearing"],
-        tb_gov_side: json["tb_gov_side"],
-        tb_coup_side: json["tb_coup_side"],
-        pb_tbn_side: json["pb_tbn_side"],
-        pb_gen_side: json["pb_gen_side"],
-        wb_tbn_side: json["wb_tbn_side"],
-        wb_gen_side: json["wb_gen_side"],
-        oc_lub_oil_outlet: json["oc_lub_oil_outlet"],
-      );
+        inletSteam: json["inlet_steam"]?.toDouble(),
+        exmSteam: json["exm_steam"]?.toDouble(),
+        turbinThrustBearing: json["turbin_thrust_bearing"]?.toDouble(),
+        tbGovSide: json["tb_gov_side"]?.toDouble(),
+        tbCoupSide: json["tb_coup_side"]?.toDouble(),
+        pbTbnSide: json["pb_tbn_side"]?.toDouble(),
+        pbGenSide: json["pb_gen_side"]?.toDouble(),
+        wbTbnSide: json["wb_tbn_side"]?.toDouble(),
+        wbGenSide: json["wb_gen_side"],
+        ocLubOilOutlet: json["oc_lub_oil_outlet"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        user: User.fromJson(json["user"]),
+    );
 
-  Map<String, dynamic> toJson() => {
+    Map<String, dynamic> toJson() => {
         "id": id,
-        "user_id": user_id,	
-        "inlet_steam": inlet_steam,
-        "exm_steam": exm_steam,
-        "turbin_thrust_bearing": turbin_thrust_bearing,
-        "tb_gov_side": tb_gov_side,
-        "tb_coup_side": tb_coup_side,
-        "pb_tbn_side": pb_tbn_side,
-        "pb_gen_side": pb_gen_side,
-        "wb_tbn_side": wb_gen_side,
-        "wb_gen_side": wb_gen_side,
-        "oc_lub_oil_outlet": oc_lub_oil_outlet,
-      };
+        "inlet_steam": inletSteam,
+        "exm_steam": exmSteam,
+        "turbin_thrust_bearing": turbinThrustBearing,
+        "tb_gov_side": tbGovSide,
+        "tb_coup_side": tbCoupSide,
+        "pb_tbn_side": pbTbnSide,
+        "pb_gen_side": pbGenSide,
+        "wb_tbn_side": wbTbnSide,
+        "wb_gen_side": wbGenSide,
+        "oc_lub_oil_outlet": ocLubOilOutlet,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "user": user.toJson(),
+    };
+}
+
+class User {
+    int id;
+    String name;
+    String username;
+    String email;
+    String gambar;
+    dynamic createdAt;
+    dynamic updatedAt;
+    String role;
+
+    User({
+        required this.id,
+        required this.name,
+        required this.username,
+        required this.email,
+        required this.gambar,
+        required this.createdAt,
+        required this.updatedAt,
+        required this.role,
+    });
+
+    factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        name: json["name"],
+        username: json["username"],
+        email: json["email"],
+        gambar: json["gambar"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+        role: json["role"],
+    );
+
+    Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "username": username,
+        "email": email,
+        "gambar": gambar,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+        "role": role,
+    };
 }
