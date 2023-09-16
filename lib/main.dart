@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:logsheet_turbin/screens/body_screen.dart';
+import 'package:logsheet_turbin/screens/body_screen.dart';
 import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:logsheet_turbin/screens/login_screen.dart';
 import 'package:logsheet_turbin/screens/onboarding_screen.dart';
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         '/onboarding': (context) => const OnboardingScreen(),
         '/': (context) => const LoginScreen(),
         '/home': (context) => const HomeScreen(),
-        //'/body':(context) => const Body(),  
+        '/body':(context) => const Body(),  
       },
     ); 
   }

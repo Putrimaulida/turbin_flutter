@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           // Request login
                           Map<String, String> headers = {"Accept": "application/json"};
                           final response = await http.post(
-                            Uri.parse('http://192.168.1.2:8000/api/login'),
+                            Uri.parse('http://192.168.1.6:8000/api/login'),
                             headers: headers,
                             body: {
                               'username': _usernameController.text,
