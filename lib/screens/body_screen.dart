@@ -55,11 +55,24 @@ class BundelCard1 extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Padding(
+                    Positioned(
+                      top: 16, // Sesuaikan posisi vertikal sesuai kebutuhan
+                      right: 16, // Sesuaikan posisi horizontal sesuai kebutuhan
+                      child: Container(
+                        width: 25, // Sesuaikan ukuran sesuai kebutuhan
+                        height: 25, // Sesuaikan ukuran sesuai kebutuhan
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Color.fromARGB(255, 255, 213, 4), // Ganti warna sesuai kebutuhan
+                        ),
+                        // Di dalam container ini Anda dapat menambahkan elemen yang sesuai,
+                        // misalnya sebuah ikon atau teks sebagai tanda dalam lingkaran.
+                      ),
+                    ),
+                    
+                    const Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,35 +90,25 @@ class BundelCard1 extends StatelessWidget {
                             width: 100,
                           ),
                           Text(
-                            'Additional Text Below PAGE 1',
+                            'Additional Text Below PAGE 2',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
                             ),
                           ),
+                          // Tambahkan teks atau elemen lain di sini
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
+                    const Positioned(
+                      bottom: 16, // Sesuaikan posisi vertikal sesuai kebutuhan
+                      right: 16, // Sesuaikan posisi horizontal sesuai kebutuhan
                       child: Image(
                         image: AssetImage('assets/images/text-generator.png'),
                         height: 110,
                         width: 110,
                       ),
                     ),
-                    // Positioned(
-                    //   top: 30.0, // Sesuaikan dengan posisi yang sesuai
-                    //   right: 30.0, // Sesuaikan dengan posisi yang sesuai
-                    //   child: Padding(
-                    //     padding: EdgeInsets.all(8.0), // Sesuaikan padding sesuai kebutuhan
-                    //     child: Image(
-                    //       image: AssetImage('assets/images/circlek.png'),
-                    //       height: 29,
-                    //       width: 29,
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -116,6 +119,8 @@ class BundelCard1 extends StatelessWidget {
     );
   }
 }
+
+
 
 
 class BundelCard2 extends StatelessWidget {

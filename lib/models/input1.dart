@@ -9,7 +9,7 @@ Input1 input1FromJson(String str) => Input1.fromJson(json.decode(str));
 String input1ToJson(Input1 data) => json.encode(data.toJson());
 
 class Input1 {
-    Data data;
+    List<Datum> data;
     dynamic message;
 
     Input1({
@@ -18,37 +18,17 @@ class Input1 {
     });
 
     factory Input1.fromJson(Map<String, dynamic> json) => Input1(
-        data: Data.fromJson(json["data"]),
+        data: List<Datum>.from(json["data"].map((x) => Datum.fromJson(x))),
         message: json["message"],
     );
 
-  get inletSteam => null;
-
-  get exmSteam => null;
-
-  get ocLubOilOutlet => null;
-
-  get turbinThrustBearing => null;
-
-  get tbGovSide => null;
-
-  get tbCoupSide => null;
-
-  get pbTbnSide => null;
-
-  get pbGenSide => null;
-
-  get wbTbnSide => null;
-
-  get wbGenSide => null;
-
     Map<String, dynamic> toJson() => {
-        "data": data.toJson(),
+        "data": List<dynamic>.from(data.map((x) => x.toJson())),
         "message": message,
     };
 }
 
-class Data {
+class Datum {
     int id;
     double inletSteam;
     double exmSteam;
@@ -58,13 +38,14 @@ class Data {
     double pbTbnSide;
     double pbGenSide;
     double wbTbnSide;
-    int wbGenSide;
-    int ocLubOilOutlet;
-    // DateTime createdAt;
-    // DateTime updatedAt;
-    // User user;
+    double wbGenSide;
+    double ocLubOilOutlet;
+    int status;
+    DateTime createdAt;
+    DateTime updatedAt;
+    User user;
 
-    Data({
+    Datum({
         required this.id,
         required this.inletSteam,
         required this.exmSteam,
@@ -76,12 +57,13 @@ class Data {
         required this.wbTbnSide,
         required this.wbGenSide,
         required this.ocLubOilOutlet,
-        // required this.createdAt,
-        // required this.updatedAt,
-        // required this.user,
+        required this.status,
+        required this.createdAt,
+        required this.updatedAt,
+        required this.user,
     });
 
-    factory Data.fromJson(Map<String, dynamic> json) => Data(
+    factory Datum.fromJson(Map<String, dynamic> json) => Datum(
         id: json["id"],
         inletSteam: json["inlet_steam"]?.toDouble(),
         exmSteam: json["exm_steam"]?.toDouble(),
@@ -91,11 +73,12 @@ class Data {
         pbTbnSide: json["pb_tbn_side"]?.toDouble(),
         pbGenSide: json["pb_gen_side"]?.toDouble(),
         wbTbnSide: json["wb_tbn_side"]?.toDouble(),
-        wbGenSide: json["wb_gen_side"],
-        ocLubOilOutlet: json["oc_lub_oil_outlet"],
-        // createdAt: DateTime.parse(json["created_at"]),
-        // updatedAt: DateTime.parse(json["updated_at"]),
-        // user: User.fromJson(json["user"]),
+        wbGenSide: json["wb_gen_side"]?.toDouble(),
+        ocLubOilOutlet: json["oc_lub_oil_outlet"]?.toDouble(),
+        status: json["status"],
+        createdAt: DateTime.parse(json["created_at"]),
+        updatedAt: DateTime.parse(json["updated_at"]),
+        user: User.fromJson(json["user"]),
     );
 
     Map<String, dynamic> toJson() => {
@@ -110,18 +93,53 @@ class Data {
         "wb_tbn_side": wbTbnSide,
         "wb_gen_side": wbGenSide,
         "oc_lub_oil_outlet": ocLubOilOutlet,
-        // "created_at": createdAt.toIso8601String(),
-        // "updated_at": updatedAt.toIso8601String(),
-        // "user": user.toJson(),
+        "status": status,
+        "created_at": createdAt.toIso8601String(),
+        "updated_at": updatedAt.toIso8601String(),
+        "user": user.toJson(),
     };
 }
 
 class User {
-    User();
+    int id;
+    String name;
+    String username;
+    String email;
+    String gambar;
+    dynamic createdAt;
+    dynamic updatedAt;
+    String role;
+
+    User({
+        required this.id,
+        required this.name,
+        required this.username,
+        required this.email,
+        required this.gambar,
+        required this.createdAt,
+        required this.updatedAt,
+        required this.role,
+    });
 
     factory User.fromJson(Map<String, dynamic> json) => User(
+        id: json["id"],
+        name: json["name"],
+        username: json["username"],
+        email: json["email"],
+        gambar: json["gambar"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+        role: json["role"],
     );
 
     Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "username": username,
+        "email": email,
+        "gambar": gambar,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+        "role": role,
     };
 }

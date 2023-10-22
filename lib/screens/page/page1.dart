@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class _DetailPage1State extends State<DetailPage1> {
   String loginErrorMessage = "";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   var input1List = <Input1>[];
-
+  
   TextEditingController inletSteamController = TextEditingController();
   TextEditingController exmSteamController = TextEditingController();
   TextEditingController turbinThrustBearingController = TextEditingController();
@@ -31,18 +32,22 @@ class _DetailPage1State extends State<DetailPage1> {
   TextEditingController wbTbnSideController = TextEditingController();
   TextEditingController wbGenSideController = TextEditingController();
   TextEditingController ocLubOilSoutletController = TextEditingController();
+  TextEditingController statusController = TextEditingController();
+
 
   bool _isInputEmpty() {
-    return inletSteamController.text.isEmpty ||
-        exmSteamController.text.isEmpty ||
-        turbinThrustBearingController.text.isEmpty ||
-        tbGovSideController.text.isEmpty ||
-        tbCoupSideController.text.isEmpty ||
-        pbTbnSideController.text.isEmpty ||
-        pbGenSideController.text.isEmpty ||
-        wbTbnSideController.text.isEmpty ||
-        wbGenSideController.text.isEmpty ||
-        ocLubOilSoutletController.text.isEmpty;
+  return inletSteamController.text.isEmpty ||
+      exmSteamController.text.isEmpty ||
+      turbinThrustBearingController.text.isEmpty ||
+      tbGovSideController.text.isEmpty ||
+      tbCoupSideController.text.isEmpty ||
+      pbTbnSideController.text.isEmpty ||
+      pbGenSideController.text.isEmpty ||
+      wbTbnSideController.text.isEmpty ||
+      wbGenSideController.text.isEmpty ||
+      ocLubOilSoutletController.text.isEmpty ||
+      statusController.text.isEmpty;
+
   }
 
   bool _isInputValid() {
@@ -57,7 +62,7 @@ class _DetailPage1State extends State<DetailPage1> {
       double.parse(wbTbnSideController.text);
       double.parse(wbGenSideController.text);
       double.parse(ocLubOilSoutletController.text);
-    
+      double.parse(statusController.text);
       return true;
     } catch (e) {
       return false;
@@ -66,28 +71,13 @@ class _DetailPage1State extends State<DetailPage1> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState();    
     fetchDataFromAPI();
-  }
-
-  @override
-  void dispose() {
-    inletSteamController.dispose();
-    exmSteamController.dispose();
-    turbinThrustBearingController.dispose();
-    tbGovSideController.dispose();
-    pbTbnSideController.dispose();
-    pbGenSideController.dispose();
-    wbTbnSideController.dispose();
-    wbGenSideController.dispose();
-    ocLubOilSoutletController.dispose();
-    super.dispose();
   }
 
   Future<void> fetchDataFromAPI() async {
     try {
-      var id = 1;
-      var data = await getListId(id);
+      var data = await getLatestDataSortedByCreatedAt();
       if (data != null) {
         setState(() {
           inletSteamController.text = data.inletSteam.toString();
@@ -100,15 +90,19 @@ class _DetailPage1State extends State<DetailPage1> {
           wbTbnSideController.text = data.wbTbnSide.toString();
           wbGenSideController.text = data.wbGenSide.toString();
           ocLubOilSoutletController.text = data.ocLubOilOutlet.toString();
+          statusController.text = data.status.toString();
         });
       }
     } catch (error) {
       // Handle error here
+      print(error.toString());
     }
   }
 
-  Future<Input1?> getListId(int id) async {
+
+    Future<Datum?> getLatestDataSortedByCreatedAt() async {
     final prefs = await _prefs;
+
     var token = prefs.getString('token');
     print(token);
     var headers = {
@@ -116,69 +110,73 @@ class _DetailPage1State extends State<DetailPage1> {
       'Accept': 'application/json',
       'Authorization': 'Bearer $token'
     };
-    try {
-      var id = 1; // Anda perlu mengisi ID yang sesuai di sini
-      var url = Uri.parse("http://192.168.1.6:8000/api/input1/$id");
 
-      final response = await http.get(url, headers: headers);    
+    try {
+      var url = Uri.parse("http://192.168.1.8:8000/api/input1/1"); // Ganti '1' dengan ID yang Anda inginkan
+      final response = await http.get(url, headers: headers);
       print(response.statusCode);
-      print(input1List.length);
       print(jsonDecode(response.body));
+
       if (response.statusCode == 200) {
-        var jsonString = response.body;
-        return input1FromJson(jsonString);       
+        var jsonData = jsonDecode(response.body);
+        var data = jsonData['data'];
+
+        if (data.isNotEmpty) {
+          var latestData = Datum.fromJson(data[0]);
+          return latestData;
+        }
       }
     } catch (error) {
-      // print('Testing');
+      print(error.toString());
     }
+
     return null;
   }
 
-  void addData() async {
-    //request add
-    final pref = await SharedPreferences.getInstance();
-    final token = pref.getString('token');
-    Map body = {
-      'inlet_steam': inletSteamController.text,
-      'exm_steam': exmSteamController.text,
-      'turbin_thrust_bearing': turbinThrustBearingController.text,
-      'tb_gov_side': tbGovSideController.text,
-      'tb_coup_side': tbCoupSideController.text,
-      'pb_tbn_side': pbTbnSideController.text,
-      'pb_gen_side': pbGenSideController.text,
-      'wb_tbn_side': wbTbnSideController.text,
-      'wb_gen_side': wbGenSideController.text,
-      'oc_lub_oil_outlet': ocLubOilSoutletController.text,
-    };
-    // memakai put
-    final response = await http.post(
-      Uri.parse('http://192.168.1.2:8000/api/input1'),
-      body: jsonEncode(body),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-    );
-    print(response.statusCode);
-    print(response.body);
-    if (response.statusCode == 200) {
-      setState(() {
-        isDataSaved = true;
-      });
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const HomeScreen(),
-        ),
-      );
-    } else {
-      final jsonResponse = json.decode(response.body);
-      print(jsonResponse);
-    }
-  }
+  // Update the data in the server
+Future<void> updateData() async {
+  final pref = await SharedPreferences.getInstance();
+  final token = pref.getString('token');
+  Map<String, dynamic> body = {
+    'inlet_steam': inletSteamController.text,
+    'exm_steam': exmSteamController.text,
+    'turbin_thrust_bearing': turbinThrustBearingController.text,
+    'tb_gov_side': tbGovSideController.text,
+    'tb_coup_side': tbCoupSideController.text,
+    'pb_tbn_side': pbTbnSideController.text,
+    'pb_gen_side': pbGenSideController.text,
+    'wb_tbn_side': wbTbnSideController.text,
+    'wb_gen_side': wbGenSideController.text,
+    'oc_lub_oil_outlet': ocLubOilSoutletController.text,
+  };
 
+  final response = await http.put(
+    Uri.parse('http://192.168.1.8:8000/api/input1/1'),
+    body: jsonEncode(body),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': 'Bearer $token',
+    },
+  );
+
+  if (response.statusCode == 200) {
+    setState(() {
+      isDataSaved = true;
+    });
+    // ignore: use_build_context_synchronously
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => const HomeScreen(),
+      ),
+    );
+  } else {
+    final jsonResponse = json.decode(response.body);
+    print(jsonResponse);
+  }
+}
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,527 +191,617 @@ class _DetailPage1State extends State<DetailPage1> {
           color: Colors.black,
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 20,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 25,
-                width: 25,
-              ),
-            
-              Text(
-              DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
+      body: Center(
+        
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(
+                  height: 25,
+                  width: 25,
                 ),
-              ),
-              const SizedBox(
-                height: 25,
-                width: 25,
-              ),
-              // Inleat Steam
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Inleat Steam (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.0),
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: inletSteamController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$'))
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Exm. Steam
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Exm. Steam (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: exmSteamController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Turbin Thrust Bearing
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Turbin Thrust Bearing (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: turbinThrustBearingController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Turbin Bearing (Gov Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Turbin Bearing / Gov Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: tbGovSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Turbin Bearing (Coup. Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Turbin Bearing / Coup. Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: tbCoupSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Pinion Bearing (Tbn. Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Pinion Bearing / Tbn. Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: pbTbnSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Pinion Bearing (Gen Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Pinion Bearing / Gen Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: pbGenSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Wheel Bearing (Thn. Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Wheel Bearing / Thn. Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: wbTbnSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Wheel Bearing (Gen Side)
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Wheel Bearing / Gen Side (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: wbGenSideController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              // Oil Cooler Lub. Oil Outlet
-              const Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    "Oil Cooler Lub. Oil Outlet (\u2103)",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 241, 238, 241),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: Color.fromARGB(255, 195, 197, 199),
-                    width: 1.0,
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 0,
-                    horizontal: 15,
-                  ),
-                  child: TextFormField(
-                    controller: ocLubOilSoutletController,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                    ],
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      isDense: true,
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-
-              Text(
-                loginErrorMessage,
-                style: const TextStyle(color: Colors.red),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (_isInputEmpty()) {
-                        setState(() {
-                          loginErrorMessage = "Please fill in all fields.";
-                        });
-                      } else if (!_isInputValid()) {
-                        setState(() {
-                          loginErrorMessage = "Invalid input format.";
-                        });
-                      } else {
-                        addData();
-                      }
-                    },
-                    child: const Text("Save"),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 50,
-              ),
-              if (isDataSaved)
-                const Text(
-                  "Data saved successfully.",
-                  style: TextStyle(
-                    color: Colors.green,
+              
+                Text(
+                DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+                  style: const TextStyle(
+                    fontSize: 16,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
-            ],
+                const SizedBox(
+                  height: 25,
+                  width: 25,
+                ),
+                // Inleat Steam
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Inleat Steam (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: inletSteamController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$'))
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Exm. Steam
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Exm. Steam (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: exmSteamController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Turbin Thrust Bearing
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Turbin Thrust Bearing (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: turbinThrustBearingController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Turbin Bearing (Gov Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Turbin Bearing / Gov Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: tbGovSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Turbin Bearing (Coup. Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Turbin Bearing / Coup. Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: tbCoupSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Pinion Bearing (Tbn. Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Pinion Bearing / Tbn. Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: pbTbnSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Pinion Bearing (Gen Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Pinion Bearing / Gen Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: pbGenSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Wheel Bearing (Thn. Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Wheel Bearing / Thn. Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: wbTbnSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Wheel Bearing (Gen Side)
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Wheel Bearing / Gen Side (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: wbGenSideController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // Oil Cooler Lub. Oil Outlet
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Oil Cooler Lub. Oil Outlet (\u2103)",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: ocLubOilSoutletController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                // status
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      "Status",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 241, 238, 241),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Color.fromARGB(255, 195, 197, 199),
+                      width: 1.0,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 0,
+                      horizontal: 15,
+                    ),
+                    child: TextFormField(
+                      controller: statusController,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
+                      ],
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+      
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_isInputEmpty()) {
+                            setState(() {
+                            });
+                        
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      loginErrorMessage = "Please fill in all fields.",
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                  ),
+                                );
+                          } else if (!_isInputValid()) {
+                            setState(() {
+                            });
+      
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      loginErrorMessage = "Invalid input format.",
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                    backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                  ),
+                                );
+                          } else {
+                            updateData();
+                            //displayData();
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16.0),
+                          ),
+                          minimumSize: Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
+                        ),
+                        child: const Text(
+                          'Save',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 50,
+                ),
+                if (isDataSaved)
+                  const Text(
+                    "Data saved successfully.",
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
