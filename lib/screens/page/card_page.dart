@@ -24,6 +24,8 @@ class CardPage extends StatelessWidget {
         child: ListView(
           children: const [
             BundelCard1(isDataSaved: true,),
+            BundelCard2(),
+            BundelCard3(),
           ],
         ),
       ),
