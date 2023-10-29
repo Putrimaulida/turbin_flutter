@@ -23,9 +23,7 @@ class CardPage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 10),
         child: ListView(
           children: const [
-            BundelCard1(),
-            BundelCard2(),
-            BundelCard3(),
+            BundelCard1(isDataSaved: true,),
           ],
         ),
       ),

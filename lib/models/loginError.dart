@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 class LoginError {
   String? message;
@@ -9,14 +8,14 @@ class LoginError {
   LoginError.fromJson(Map<String, dynamic> json) {
     message = json['message'];
     errors =
-        json['errors'] != null ? new Errors.fromJson(json['errors']) : null;
+        json['errors'] != null ? Errors.fromJson(json['errors']) : null;
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['message'] = this.message;
-    if (this.errors != null) {
-      data['errors'] = this.errors!.toJson();
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = message;
+    if (errors != null) {
+      data['errors'] = errors!.toJson();
     }
     return data;
   }
@@ -38,9 +37,9 @@ class Errors {
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['username'] = this.username;
-    data['password'] = this.password;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['username'] = username;
+    data['password'] = password;
     return data;
   }
 }

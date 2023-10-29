@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -33,7 +32,6 @@ class _DetailPage1State extends State<DetailPage1> {
   TextEditingController wbGenSideController = TextEditingController();
   TextEditingController ocLubOilSoutletController = TextEditingController();
   TextEditingController statusController = TextEditingController();
-
 
   bool _isInputEmpty() {
   return inletSteamController.text.isEmpty ||
@@ -102,9 +100,7 @@ class _DetailPage1State extends State<DetailPage1> {
 
     Future<Datum?> getLatestDataSortedByCreatedAt() async {
     final prefs = await _prefs;
-
     var token = prefs.getString('token');
-    print(token);
     var headers = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -134,48 +130,49 @@ class _DetailPage1State extends State<DetailPage1> {
   }
 
   // Update the data in the server
-Future<void> updateData() async {
-  final pref = await SharedPreferences.getInstance();
-  final token = pref.getString('token');
-  Map<String, dynamic> body = {
-    'inlet_steam': inletSteamController.text,
-    'exm_steam': exmSteamController.text,
-    'turbin_thrust_bearing': turbinThrustBearingController.text,
-    'tb_gov_side': tbGovSideController.text,
-    'tb_coup_side': tbCoupSideController.text,
-    'pb_tbn_side': pbTbnSideController.text,
-    'pb_gen_side': pbGenSideController.text,
-    'wb_tbn_side': wbTbnSideController.text,
-    'wb_gen_side': wbGenSideController.text,
-    'oc_lub_oil_outlet': ocLubOilSoutletController.text,
-  };
+  Future<void> updateData() async {
+    final pref = await SharedPreferences.getInstance();
+    final token = pref.getString('token');
+    Map<String, dynamic> body = {
+      'inlet_steam': inletSteamController.text,
+      'exm_steam': exmSteamController.text,
+      'turbin_thrust_bearing': turbinThrustBearingController.text,
+      'tb_gov_side': tbGovSideController.text,
+      'tb_coup_side': tbCoupSideController.text,
+      'pb_tbn_side': pbTbnSideController.text,
+      'pb_gen_side': pbGenSideController.text,
+      'wb_tbn_side': wbTbnSideController.text,
+      'wb_gen_side': wbGenSideController.text,
+      'oc_lub_oil_outlet': ocLubOilSoutletController.text,
+      
+    };
 
-  final response = await http.put(
-    Uri.parse('http://192.168.1.8:8000/api/input1/1'),
-    body: jsonEncode(body),
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': 'Bearer $token',
-    },
-  );
-
-  if (response.statusCode == 200) {
-    setState(() {
-      isDataSaved = true;
-    });
-    // ignore: use_build_context_synchronously
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => const HomeScreen(),
-      ),
+    final response = await http.put(
+      Uri.parse('http://192.168.1.8:8000/api/input1/1'),
+      body: jsonEncode(body),
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
-  } else {
-    final jsonResponse = json.decode(response.body);
-    print(jsonResponse);
+
+    if (response.statusCode == 200) {
+      setState(() {
+        isDataSaved = true;
+      });
+      // ignore: use_build_context_synchronously
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => const HomeScreen(),
+        ),
+      );
+    } else {
+      final jsonResponse = json.decode(response.body);
+      print(jsonResponse);
+    }
   }
-}
   
   @override
   Widget build(BuildContext context) {
@@ -236,9 +233,9 @@ Future<void> updateData() async {
                 Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10.0),
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -281,10 +278,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -328,10 +325,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -375,10 +372,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -422,10 +419,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -469,10 +466,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -516,10 +513,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -563,10 +560,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -610,10 +607,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -657,10 +654,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -704,10 +701,10 @@ Future<void> updateData() async {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -769,14 +766,13 @@ Future<void> updateData() async {
                                 );
                           } else {
                             updateData();
-                            //displayData();
                           }
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          minimumSize: Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
+                          minimumSize: const Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
                         ),
                         child: const Text(
                           'Save',

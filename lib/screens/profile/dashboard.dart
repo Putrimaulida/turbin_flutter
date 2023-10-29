@@ -27,7 +27,7 @@ class DashboardScreen extends StatelessWidget {
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/dashboard.png'),
+                    image: AssetImage('assets/images/bg2.png'),
                     fit: BoxFit.cover,
                   ),
                 ),

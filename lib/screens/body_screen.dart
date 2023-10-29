@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:logsheet_turbin/screens/page/page1.dart';
-import 'package:logsheet_turbin/screens/page/page2.dart';
-import 'package:logsheet_turbin/screens/page/page3.dart';
 import 'package:logsheet_turbin/screens/profile/dashboard.dart';
+
 
 class Body extends StatelessWidget {
   const Body({super.key});
@@ -13,9 +12,7 @@ class Body extends StatelessWidget {
       child: Column(
         children: <Widget>[
           DashboardScreen(),
-          BundelCard1(),
-          BundelCard2(),
-          BundelCard3(),
+          BundelCard1(isDataSaved: true,),         
         ],
       ),
     );
@@ -23,13 +20,16 @@ class Body extends StatelessWidget {
 }
 
 class BundelCard1 extends StatelessWidget {
-  const BundelCard1({super.key});
+  final bool isDataSaved;
+  // ignore: use_key_in_widget_constructors
+  const BundelCard1({Key? key, required this.isDataSaved});
 
   @override
   Widget build(BuildContext context) {
+    // ignore: unrelated_type_equality_checks
+    final circleColor = isDataSaved == 0.0 ? Colors.green : const Color.fromARGB(255, 255, 213, 4);
+
     return Center(
-      // bisa dikasi if data= null detail page 1 save
-      // jika data data!=null masuk ke detail page 1 edit
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -46,32 +46,28 @@ class BundelCard1 extends StatelessWidget {
             elevation: 0,
             color: Colors.transparent,
             child: ClipRRect(
-              // Use ClipRRect to make the background circular
               borderRadius: BorderRadius.circular(16.0),
               child: Container(
                 decoration: const BoxDecoration(
                   image: DecorationImage(
-                    image: AssetImage('assets/images/bg1.png'),
+                    image: AssetImage('assets/images/coba.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
                 child: Stack(
                   children: [
                     Positioned(
-                      top: 16, // Sesuaikan posisi vertikal sesuai kebutuhan
-                      right: 16, // Sesuaikan posisi horizontal sesuai kebutuhan
+                      top: 16,
+                      right: 16,
                       child: Container(
-                        width: 25, // Sesuaikan ukuran sesuai kebutuhan
-                        height: 25, // Sesuaikan ukuran sesuai kebutuhan
-                        decoration: const BoxDecoration(
+                        width: 16,
+                        height: 16,
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color.fromARGB(255, 255, 213, 4), // Ganti warna sesuai kebutuhan
+                          color: circleColor,
                         ),
-                        // Di dalam container ini Anda dapat menambahkan elemen yang sesuai,
-                        // misalnya sebuah ikon atau teks sebagai tanda dalam lingkaran.
                       ),
                     ),
-                    
                     const Padding(
                       padding: EdgeInsets.all(16.0),
                       child: Column(
@@ -96,13 +92,12 @@ class BundelCard1 extends StatelessWidget {
                               fontSize: 12,
                             ),
                           ),
-                          // Tambahkan teks atau elemen lain di sini
                         ],
                       ),
                     ),
                     const Positioned(
-                      bottom: 16, // Sesuaikan posisi vertikal sesuai kebutuhan
-                      right: 16, // Sesuaikan posisi horizontal sesuai kebutuhan
+                      bottom: 16,
+                      right: 16,
                       child: Image(
                         image: AssetImage('assets/images/text-generator.png'),
                         height: 110,
@@ -119,178 +114,3 @@ class BundelCard1 extends StatelessWidget {
     );
   }
 }
-
-
-
-
-class BundelCard2 extends StatelessWidget {
-  const BundelCard2({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const DetailPage2()),
-          );
-        },
-        child: Container(
-          constraints: const BoxConstraints(
-            minHeight: 180,
-            minWidth: 400,
-          ),
-          child: Card(
-            elevation: 0,
-            color: Colors.transparent,
-            child: ClipRRect(
-              // Use ClipRRect to make the background circular
-              borderRadius: BorderRadius.circular(16.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/bg3.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'PAGE 2',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 100,
-                            width: 100,
-                          ),
-                          Text(
-                            'Additional Text Below PAGE 2',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Positioned(
-                      bottom: 16.0, // Atur posisi dari bawah
-                      right: 16.0, // Atur posisi dari kanan
-                      child: Image(
-                        image: AssetImage('assets/images/energy-consumption.png'),
-                        height: 115,
-                        width: 115,
-                      ),
-                    ),
-                    // Padding(
-                    //   padding: EdgeInsets.all(16.0),
-                    //   child: Image(
-                    //     image: AssetImage('assets/images/energy-consumption.png'),
-                    //     height: 115,
-                    //     width: 115,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class BundelCard3 extends StatelessWidget {
-  const BundelCard3({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const DetailPage3()),
-          );
-        },
-        child: Container(
-          constraints: const BoxConstraints(
-            minHeight: 180,
-            minWidth: 400,
-          ),
-          child: Card(
-            elevation: 0,
-            color: Colors.transparent,
-            child: ClipRRect(
-              // Use ClipRRect to make the background circular
-              borderRadius: BorderRadius.circular(16.0),
-              child: Container(
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/bg2.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'PAGE 3',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            height: 100,
-                            width: 100,
-                          ),
-                          Text(
-                            'Additional Text Below PAGE 3',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Image(
-                        image: AssetImage('assets/images/electric-generator.png'),
-                        height: 110,
-                        width: 110,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-

@@ -19,7 +19,7 @@ class DetailGrafik extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      body: Container(
+      body: const SizedBox(
         height: 300,
         child: LineChartSample()),
     );
@@ -27,6 +27,8 @@ class DetailGrafik extends StatelessWidget {
 }
 
 class LineChartSample extends StatelessWidget {
+  const LineChartSample({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,7 +41,7 @@ class LineChartSample extends StatelessWidget {
         ),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: LineChart(
           LineChartData(
             // Konfigurasi data untuk Line Chart
@@ -106,13 +108,13 @@ class LineChartSample extends StatelessWidget {
             lineBarsData: [
               LineChartBarData(
                 spots: [
-                  FlSpot(0, 3),
-                  FlSpot(1, 1),
-                  FlSpot(2, 4),
-                  FlSpot(3, 2),
-                  FlSpot(4, 5),
-                  FlSpot(5, 2),
-                  FlSpot(6, 4),
+                  const FlSpot(0, 3),
+                  const FlSpot(1, 1),
+                  const FlSpot(2, 4),
+                  const FlSpot(3, 2),
+                  const FlSpot(4, 5),
+                  const FlSpot(5, 2),
+                  const FlSpot(6, 4),
                 ],
                 isCurved: true,
                 colors: [Colors.blue], // Ganti dengan warna sesuai kebutuhan

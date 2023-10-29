@@ -78,10 +78,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -122,10 +122,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Color.fromARGB(255, 241, 238, 241),
+                    color: const Color.fromARGB(255, 241, 238, 241),
                     borderRadius: BorderRadius.circular(100),
                     border: Border.all(
-                      color: Color.fromARGB(255, 195, 197, 199),
+                      color: const Color.fromARGB(255, 195, 197, 199),
                       width: 1.0,
                     ),
                   ),
@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       controller: _passwordController,
                       decoration: InputDecoration(
                         border: InputBorder.none,
-                        prefixIcon: Icon(Icons.lock),
+                        prefixIcon: const Icon(Icons.lock),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _passwordVisible
@@ -153,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(
                                 content: Text(
                                   loginErrorMessage = "Username and password cannot be empty!",
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                                 backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
                               ),
@@ -198,7 +198,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(
                                 content: Text(
                                   loginErrorMessage = "Password cannot be empty!",
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                                 backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
                               ),
@@ -272,7 +272,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               SnackBar(
                                 content: Text(
                                   loginErrorMessage = "Invalid password!",
-                                  style: TextStyle(color: Colors.white),
+                                  style: const TextStyle(color: Colors.white),
                                 ),
                                 backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
                               ),

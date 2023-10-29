@@ -3,7 +3,7 @@ import 'package:logsheet_turbin/screens/body_screen.dart';
 import 'package:logsheet_turbin/screens/profile/sidebar.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

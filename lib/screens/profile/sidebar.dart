@@ -35,7 +35,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => DetailGrafik(),
+                  builder: (context) => const DetailGrafik(),
                 ),
               );
             },
@@ -47,7 +47,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CardPage(),
+                  builder: (context) => const CardPage(),
                 ),
               );
             },
@@ -62,7 +62,7 @@ class AppDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LoginScreen(),
+                  builder: (context) => const LoginScreen(),
                 ),
               );
             },
