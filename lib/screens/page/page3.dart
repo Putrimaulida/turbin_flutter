@@ -31,7 +31,7 @@ class _DetailPage3 extends State<DetailPage3> {
     final token = pref.getString('token');
     Map body = {
       'temp_water_in': waterInController.text,
-      'temp_water_out':waterOutController.text,
+      'temp_water_out': waterOutController.text,
       'temp_oil_in': oilInController.text,
       'temp_oil_out': oilOutController.text,
       'vacum': vacumController.text,
@@ -57,12 +57,12 @@ class _DetailPage3 extends State<DetailPage3> {
         isDataSaved = true;
       });
       // ignore: use_build_context_synchronously
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (BuildContext context) => const CardPage(),
-        ),
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (BuildContext context) => const CardPage(),
+      //   ),
+      // );
     } else {
       final jsonResponse = json.decode(response.body);
       print(jsonResponse);
@@ -117,7 +117,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10.0),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -159,7 +160,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -202,7 +204,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -245,7 +248,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -288,7 +292,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -331,7 +336,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -375,7 +381,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -418,7 +425,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -462,7 +470,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -505,7 +514,8 @@ class _DetailPage3 extends State<DetailPage3> {
                   color: const Color.fromARGB(255, 241, 238, 241),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 195, 197, 199), // Warna garis tepi
+                    color: const Color.fromARGB(
+                        255, 195, 197, 199), // Warna garis tepi
                     width: 1.0, // Ketebalan garis tepi
                   ),
                 ),
@@ -531,14 +541,15 @@ class _DetailPage3 extends State<DetailPage3> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {                      
+                    onPressed: () {
                       addData();
                     },
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      minimumSize: const Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
+                      minimumSize: const Size(
+                          100.0, 45.0), // Ubah ukuran sesuai keinginan
                     ),
                     child: const Text(
                       'Save',
@@ -551,12 +562,12 @@ class _DetailPage3 extends State<DetailPage3> {
                   const SizedBox(width: 16.0),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const CardPage(),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => const CardPage(),
+                      //   ),
+                      // );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -564,7 +575,8 @@ class _DetailPage3 extends State<DetailPage3> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16.0),
                       ),
-                      minimumSize: const Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
+                      minimumSize: const Size(
+                          100.0, 45.0), // Ubah ukuran sesuai keinginan
                     ),
                     child: const Text(
                       'Cancel',

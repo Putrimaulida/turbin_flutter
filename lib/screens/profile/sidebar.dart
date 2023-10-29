@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:logsheet_turbin/screens/login_screen.dart';
-import 'package:logsheet_turbin/screens/page/card_page.dart';
 import 'package:logsheet_turbin/screens/page/grafik.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -16,9 +15,11 @@ class AppDrawer extends StatelessWidget {
             height: 100,
             child: DrawerHeader(
               decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(bottom: BorderSide(color: Color.fromARGB(255, 196, 192, 192), width: 1.0))
-              ),
+                  color: Colors.white,
+                  border: Border(
+                      bottom: BorderSide(
+                          color: Color.fromARGB(255, 196, 192, 192),
+                          width: 1.0))),
               child: Text(
                 'PT Sinergi Gula Nusantara',
                 style: TextStyle(
@@ -44,12 +45,12 @@ class AppDrawer extends StatelessWidget {
             leading: const Icon(Icons.file_copy),
             title: const Text('Logsheet Turbin'),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const CardPage(),
-                ),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => const CardPage(),
+              //   ),
+              // );
             },
           ),
           const SizedBox(

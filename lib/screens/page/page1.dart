@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:logsheet_turbin/data/http_service.dart';
 import 'package:logsheet_turbin/models/input1.dart';
 import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,7 +20,7 @@ class _DetailPage1State extends State<DetailPage1> {
   String loginErrorMessage = "";
   final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   var input1List = <Input1>[];
-  
+
   TextEditingController inletSteamController = TextEditingController();
   TextEditingController exmSteamController = TextEditingController();
   TextEditingController turbinThrustBearingController = TextEditingController();
@@ -34,18 +34,17 @@ class _DetailPage1State extends State<DetailPage1> {
   TextEditingController statusController = TextEditingController();
 
   bool _isInputEmpty() {
-  return inletSteamController.text.isEmpty ||
-      exmSteamController.text.isEmpty ||
-      turbinThrustBearingController.text.isEmpty ||
-      tbGovSideController.text.isEmpty ||
-      tbCoupSideController.text.isEmpty ||
-      pbTbnSideController.text.isEmpty ||
-      pbGenSideController.text.isEmpty ||
-      wbTbnSideController.text.isEmpty ||
-      wbGenSideController.text.isEmpty ||
-      ocLubOilSoutletController.text.isEmpty ||
-      statusController.text.isEmpty;
-
+    return inletSteamController.text.isEmpty ||
+        exmSteamController.text.isEmpty ||
+        turbinThrustBearingController.text.isEmpty ||
+        tbGovSideController.text.isEmpty ||
+        tbCoupSideController.text.isEmpty ||
+        pbTbnSideController.text.isEmpty ||
+        pbGenSideController.text.isEmpty ||
+        wbTbnSideController.text.isEmpty ||
+        wbGenSideController.text.isEmpty ||
+        ocLubOilSoutletController.text.isEmpty ||
+        statusController.text.isEmpty;
   }
 
   bool _isInputValid() {
@@ -69,7 +68,7 @@ class _DetailPage1State extends State<DetailPage1> {
 
   @override
   void initState() {
-    super.initState();    
+    super.initState();
     fetchDataFromAPI();
   }
 
@@ -97,8 +96,7 @@ class _DetailPage1State extends State<DetailPage1> {
     }
   }
 
-
-    Future<Datum?> getLatestDataSortedByCreatedAt() async {
+  Future<Datum?> getLatestDataSortedByCreatedAt() async {
     final prefs = await _prefs;
     var token = prefs.getString('token');
     var headers = {
@@ -108,7 +106,8 @@ class _DetailPage1State extends State<DetailPage1> {
     };
 
     try {
-      var url = Uri.parse("http://192.168.1.8:8000/api/input1/1"); // Ganti '1' dengan ID yang Anda inginkan
+      var url = Uri.parse('${HttpService.baseUrl}/input1/1');
+
       final response = await http.get(url, headers: headers);
       print(response.statusCode);
       print(jsonDecode(response.body));
@@ -129,26 +128,27 @@ class _DetailPage1State extends State<DetailPage1> {
     return null;
   }
 
-  // Update the data in the server
   Future<void> updateData() async {
     final pref = await SharedPreferences.getInstance();
     final token = pref.getString('token');
+
     Map<String, dynamic> body = {
-      'inlet_steam': inletSteamController.text,
-      'exm_steam': exmSteamController.text,
-      'turbin_thrust_bearing': turbinThrustBearingController.text,
-      'tb_gov_side': tbGovSideController.text,
-      'tb_coup_side': tbCoupSideController.text,
-      'pb_tbn_side': pbTbnSideController.text,
-      'pb_gen_side': pbGenSideController.text,
-      'wb_tbn_side': wbTbnSideController.text,
-      'wb_gen_side': wbGenSideController.text,
-      'oc_lub_oil_outlet': ocLubOilSoutletController.text,
-      
+      'inlet_steam': double.tryParse(inletSteamController.text) ?? 0.0,
+      'exm_steam': double.tryParse(exmSteamController.text) ?? 0.0,
+      'turbin_thrust_bearing': double.tryParse(turbinThrustBearingController.text) ?? 0.0,
+      'tb_gov_side': double.tryParse(tbGovSideController.text) ?? 0.0,
+      'tb_coup_side': double.tryParse(tbCoupSideController.text) ?? 0.0,
+      'pb_tbn_side': double.tryParse(pbTbnSideController.text) ?? 0.0,
+      'pb_gen_side': double.tryParse(pbGenSideController.text) ?? 0.0,
+      'wb_tbn_side': double.tryParse(wbTbnSideController.text) ?? 0.0,
+      'wb_gen_side': double.tryParse(wbGenSideController.text) ?? 0.0,
+      'oc_lub_oil_outlet': double.tryParse(ocLubOilSoutletController.text) ?? 0.0,
     };
+    final test = jsonEncode(body);
+    print(test);
 
     final response = await http.put(
-      Uri.parse('http://192.168.1.8:8000/api/input1/1'),
+      Uri.parse('${HttpService.baseUrl}/input1/1'),
       body: jsonEncode(body),
       headers: {
         'Content-Type': 'application/json',
@@ -170,10 +170,11 @@ class _DetailPage1State extends State<DetailPage1> {
       );
     } else {
       final jsonResponse = json.decode(response.body);
+      print('testResponse');
       print(jsonResponse);
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -181,7 +182,7 @@ class _DetailPage1State extends State<DetailPage1> {
         title: const Text('PAGE 1'),
         titleTextStyle: const TextStyle(
           fontSize: 18,
-        color: Colors.black,
+          color: Colors.black,
           fontWeight: FontWeight.bold,
         ),
         iconTheme: const IconThemeData(
@@ -189,7 +190,6 @@ class _DetailPage1State extends State<DetailPage1> {
         ),
       ),
       body: Center(
-        
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(
@@ -202,9 +202,9 @@ class _DetailPage1State extends State<DetailPage1> {
                   height: 25,
                   width: 25,
                 ),
-              
+
                 Text(
-                DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
+                  DateFormat('yyyy-MM-dd HH:mm').format(DateTime.now()),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -246,9 +246,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: inletSteamController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$'))
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -260,7 +257,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Exm. Steam
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -293,9 +290,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: exmSteamController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -307,7 +301,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Turbin Thrust Bearing
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -340,9 +334,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: turbinThrustBearingController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -354,7 +345,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Turbin Bearing (Gov Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -387,9 +378,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: tbGovSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -401,7 +389,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Turbin Bearing (Coup. Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -434,9 +422,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: tbCoupSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -448,7 +433,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Pinion Bearing (Tbn. Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -481,9 +466,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: pbTbnSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -495,7 +477,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Pinion Bearing (Gen Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -528,9 +510,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: pbGenSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -542,7 +521,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Wheel Bearing (Thn. Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -575,9 +554,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: wbTbnSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -589,7 +565,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Wheel Bearing (Gen Side)
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -622,9 +598,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: wbGenSideController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -636,7 +609,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // Oil Cooler Lub. Oil Outlet
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -669,9 +642,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: ocLubOilSoutletController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -683,7 +653,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 // status
                 const Align(
                   alignment: Alignment.centerLeft,
@@ -716,9 +686,6 @@ class _DetailPage1State extends State<DetailPage1> {
                     child: TextFormField(
                       controller: statusController,
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z\d]+(\.\d{0,2})?$')),
-                      ],
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         isDense: true,
@@ -730,7 +697,7 @@ class _DetailPage1State extends State<DetailPage1> {
                 const SizedBox(
                   height: 20,
                 ),
-      
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -739,31 +706,32 @@ class _DetailPage1State extends State<DetailPage1> {
                       child: ElevatedButton(
                         onPressed: () {
                           if (_isInputEmpty()) {
-                            setState(() {
-                            });
-                        
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      loginErrorMessage = "Please fill in all fields.",
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                    backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
-                                  ),
-                                );
+                            setState(() {});
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  loginErrorMessage =
+                                      "Please fill in all fields.",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
+                              ),
+                            );
                           } else if (!_isInputValid()) {
-                            setState(() {
-                            });
-      
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      loginErrorMessage = "Invalid input format.",
-                                      style: const TextStyle(color: Colors.white),
-                                    ),
-                                    backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
-                                  ),
-                                );
+                            setState(() {});
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  loginErrorMessage = "Invalid input format.",
+                                  style: const TextStyle(color: Colors.white),
+                                ),
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
+                              ),
+                            );
                           } else {
                             updateData();
                           }
@@ -772,7 +740,8 @@ class _DetailPage1State extends State<DetailPage1> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(16.0),
                           ),
-                          minimumSize: const Size(100.0, 45.0), // Ubah ukuran sesuai keinginan
+                          minimumSize: const Size(
+                              100.0, 45.0), // Ubah ukuran sesuai keinginan
                         ),
                         child: const Text(
                           'Save',

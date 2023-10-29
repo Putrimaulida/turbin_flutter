@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:logsheet_turbin/data/http_service.dart';
 import 'package:logsheet_turbin/screens/home_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,8 +18,10 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   String loginErrorMessage = "";
 
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController =
+      TextEditingController(text: 'operator');
+  final TextEditingController _passwordController =
+      TextEditingController(text: 'password');
 
   @override
   Widget build(BuildContext context) {
@@ -153,7 +156,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                         isDense: true,
-                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -183,33 +187,39 @@ class _LoginScreenState extends State<LoginScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  loginErrorMessage = "Username and password cannot be empty!",
+                                  loginErrorMessage =
+                                      "Username and password cannot be empty!",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
                               ),
                             );
                             return;
                           } else if (_passwordController.text.isEmpty) {
-                            setState(() {                             
+                            setState(() {
                               isLoginInProgress = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  loginErrorMessage = "Password cannot be empty!",
+                                  loginErrorMessage =
+                                      "Password cannot be empty!",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
                               ),
                             );
                             return;
                           }
 
                           // Request login
-                          Map<String, String> headers = {"Accept": "application/json"};
+                          Map<String, String> headers = {
+                            "Accept": "application/json"
+                          };
                           final response = await http.post(
-                            Uri.parse('http://192.168.1.8:8000/api/login'),
+                            Uri.parse('${HttpService.baseUrl}/login'),
                             headers: headers,
                             body: {
                               'username': _usernameController.text,
@@ -222,7 +232,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             final prefs = await SharedPreferences.getInstance();
                             print("Token From Api ${jsonResponse['token']}");
                             if (jsonResponse['token'] != null) {
-                              await prefs.setString('token', jsonResponse['token']);
+                              await prefs.setString(
+                                  'token', jsonResponse['token']);
                               setState(() {
                                 isLoginInProgress = false;
                                 isLoggedIn = true;
@@ -238,7 +249,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                       "Success login",
                                       style: TextStyle(color: Colors.white),
                                     ),
-                                    backgroundColor: Colors.green, // Warna latar belakang Snackbar untuk sukses
+                                    backgroundColor: Colors
+                                        .green, // Warna latar belakang Snackbar untuk sukses
                                   ),
                                 );
                                 Navigator.pushReplacement(
@@ -251,7 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               }
                             }
                           } else if (response.statusCode == 401) {
-                            setState(() {                              
+                            setState(() {
                               isLoginInProgress = false;
                             });
                             // ignore: use_build_context_synchronously
@@ -261,11 +273,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                   loginErrorMessage = "Invalid username!",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
                               ),
                             );
                           } else {
-                            setState(() {                              
+                            setState(() {
                               isLoginInProgress = false;
                             });
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -274,9 +287,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   loginErrorMessage = "Invalid password!",
                                   style: const TextStyle(color: Colors.white),
                                 ),
-                                backgroundColor: const Color.fromARGB(255, 75, 93, 101), // Warna latar belakang Snackbar
+                                backgroundColor: const Color.fromARGB(255, 75,
+                                    93, 101), // Warna latar belakang Snackbar
                               ),
-                            );                         
+                            );
                           }
                         },
                         child: const Padding(
