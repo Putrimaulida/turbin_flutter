@@ -21,15 +21,15 @@ class _DetailPage2 extends State<DetailPage2> {
   final Future<SharedPreferences> _prefs2 = SharedPreferences.getInstance();
   var input2List = <Input2>[];
 
-  final TextEditingController turbinSpeedController = TextEditingController();
-  final TextEditingController rotorVibMonitorController = TextEditingController();
-  final TextEditingController axialDisplacementMonitorController = TextEditingController();
-  final TextEditingController mainSteamController = TextEditingController();
-  final TextEditingController stageSteamController = TextEditingController();
-  final TextEditingController exhaustController = TextEditingController();
-  final TextEditingController lubOilController = TextEditingController();
-  final TextEditingController controlOilController = TextEditingController();
-  TextEditingController statusController = TextEditingController();
+   TextEditingController turbinSpeedController = TextEditingController();
+   TextEditingController rotorVibMonitorController = TextEditingController();
+   TextEditingController axialDisplacementMonitorController = TextEditingController();
+   TextEditingController mainSteamController = TextEditingController();
+   TextEditingController stageSteamController = TextEditingController();
+   TextEditingController exhaustController = TextEditingController();
+   TextEditingController lubOilController = TextEditingController();
+   TextEditingController controlOilController = TextEditingController();
+   TextEditingController statusController = TextEditingController();
 
   bool _isInputEmpty() {
     return turbinSpeedController.text.isEmpty ||
@@ -121,8 +121,8 @@ class _DetailPage2 extends State<DetailPage2> {
   }
 
   Future<void> updateDataInput2() async {
-    final pref = await SharedPreferences.getInstance();
-    final token = pref.getString('token');
+    final pref2 = await SharedPreferences.getInstance();
+    final token = pref2.getString('token');
 
     Map<String, dynamic> body = {
       'turbin_speed' : double.tryParse(turbinSpeedController.text) ?? 0.0,
