@@ -1,6 +1,6 @@
 
 class HttpService {
-  static const String baseUrl = '36.89.142.91:8000/api';
+  static const String baseUrl = 'http://36.89.142.91:8000/api';
   static _AuthEndPoints authEndpoints = _AuthEndPoints();
 }
 
